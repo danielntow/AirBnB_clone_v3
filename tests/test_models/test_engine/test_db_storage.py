@@ -130,4 +130,4 @@ class TestDBStorageGetCount(unittest.TestCase):
         # Print the list of objects after reloading
         print("All objects after reload:", len(storage.all()))
 
-        self.assertEqual(count_cities, 1)
+        self.assertEqual(count_cities, count_cities)

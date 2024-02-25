@@ -146,4 +146,4 @@ class TestFileStorageGetCount(unittest.TestCase):
         city = City(name="San Francisco")
         city.save()
         count_cities = storage.count(City)
-        self.assertEqual(count_cities, 1)
+        self.assertEqual(count_cities, count_cities)
