@@ -3,6 +3,7 @@
 Contains the TestDBStorageDocs and TestDBStorage classes
 """
 
+from models import storage
 from datetime import datetime
 import inspect
 import models
@@ -86,3 +87,47 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+
+
+class TestDBStorageGetCount(unittest.TestCase):
+    """Test DBStorage get and count methods"""
+
+    @classmethod
+    def setUpClass(cls):
+        storage.reload()
+
+    def test_get_existing_object(self):
+        """Test get method with an existing object"""
+        state = State(name="California")
+        state.save()
+        retrieved_state = storage.get(State, state.id)
+        self.assertEqual(retrieved_state, state)
+
+    def test_get_non_existing_object(self):
+        """Test get method with a non-existing object"""
+        non_existing_state = storage.get(State, "non_existing_id")
+        self.assertIsNone(non_existing_state)
+
+    def test_count_all_objects(self):
+        """Test count method with all objects"""
+        count_all = storage.count()
+        total_objects = len(storage.all())
+        self.assertEqual(count_all, total_objects)
+
+    def test_count_specific_class_objects(self):
+        """Test count method with specific class objects"""
+        city = City(name="San Francisco")
+        city.save()
+
+        # Print the list of objects before and after the test
+        print("All objects:", len(storage.all()))
+        count_cities = storage.count(City)
+        print("Count of City objects:", count_cities)
+
+        # Reload the storage to reflect changes made during the test
+        storage.reload()
+
+        # Print the list of objects after reloading
+        print("All objects after reload:", len(storage.all()))
+
+        self.assertEqual(count_cities, 1)

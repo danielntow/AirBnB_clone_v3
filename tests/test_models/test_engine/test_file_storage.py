@@ -3,6 +3,7 @@
 Contains the TestFileStorageDocs classes
 """
 
+from models import storage
 from datetime import datetime
 import inspect
 import models
@@ -113,3 +114,36 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
+
+
+class TestFileStorageGetCount(unittest.TestCase):
+    """Test FileStorage get and count methods"""
+
+    @classmethod
+    def setUpClass(cls):
+        storage.reload()
+
+    def test_get_existing_object(self):
+        """Test get method with an existing object"""
+        state = State(name="California")
+        state.save()
+        retrieved_state = storage.get(State, state.id)
+        self.assertEqual(retrieved_state, state)
+
+    def test_get_non_existing_object(self):
+        """Test get method with a non-existing object"""
+        non_existing_state = storage.get(State, "non_existing_id")
+        self.assertIsNone(non_existing_state)
+
+    def test_count_all_objects(self):
+        """Test count method with all objects"""
+        count_all = storage.count()
+        total_objects = len(storage.all())
+        self.assertEqual(count_all, total_objects)
+
+    def test_count_specific_class_objects(self):
+        """Test count method with specific class objects"""
+        city = City(name="San Francisco")
+        city.save()
+        count_cities = storage.count(City)
+        self.assertEqual(count_cities, 1)
